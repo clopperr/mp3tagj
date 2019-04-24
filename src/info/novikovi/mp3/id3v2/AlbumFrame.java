@@ -5,7 +5,7 @@ import info.novikovi.mp3.UnknownTextEncoding;
 import info.novikovi.mp3.Utils;
 import info.novikovi.mp3.Utils.ExtString;
 
-public class AlbumFrame extends CommonFrame
+public class AlbumFrame extends CommonFrame implements CommonTextFrame
 {
 	/**
 	 * название альбома

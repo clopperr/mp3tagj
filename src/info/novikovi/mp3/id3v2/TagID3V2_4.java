@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 import info.novikovi.mp3.UnknownTextEncoding;
 import info.novikovi.mp3.Utils;
@@ -83,6 +85,11 @@ public class TagID3V2_4
 	 */
 	private int major_version;
 	private int minor_version;
+	
+	/**
+	 * список фреймов
+	 */
+	private List<CommonFrame> frames = new ArrayList<>();
 	
 	/**
 	 * <p>Конструктор.</p>
@@ -174,8 +181,8 @@ public class TagID3V2_4
 						while (offset < size && (tag_data[offset] & 0xFF) >= 48)
 						{
 							CommonFrame frame = FrameFactory.getFrame(tag_data, offset);
+							frames.add(frame);
 							offset += frame.getSize();
-							System.out.println(frame);
 						}
 					}
 				}
@@ -204,4 +211,31 @@ public class TagID3V2_4
 	
 	public int getMajorVersion() {return major_version;}
 	public int getMinorVersion() {return minor_version;}
+	
+	/**
+	 * <p>Возвращает количество фреймов.</p>
+	 * @return количество фреймов
+	 */
+	public int getFrameCount() {return frames.size();}
+	
+	/**
+	 * <p>Возвращает фрейм с указанным индексом.</p>
+	 * @param index номер фрейма
+	 * @return фрейм
+	 */
+	public CommonFrame getFrame(int index) {return frames.get(index);}
+	
+	/**
+	 * <p>Возвращает фрейм с указанным идентификатором.</p>
+	 * @param frame_id идентификатор фрейма
+	 * @return фрейм или null, если такого фрейма нет
+	 */
+	public CommonFrame getFrameByName(String frame_id)
+	{
+		// ищем фрейм по идентификатору
+		for (CommonFrame frame: frames)
+			if (frame.getId().equals(frame_id)) return frame;
+		// не нашли
+		return null;
+	}
 }

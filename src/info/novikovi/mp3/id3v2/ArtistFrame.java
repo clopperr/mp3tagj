@@ -5,7 +5,7 @@ import info.novikovi.mp3.UnknownTextEncoding;
 import info.novikovi.mp3.Utils;
 import info.novikovi.mp3.Utils.ExtString;
 
-public class ArtistFrame extends CommonFrame
+public class ArtistFrame extends CommonFrame implements CommonTextFrame
 {
 	/**
 	 * исполнитель

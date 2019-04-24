@@ -8,7 +8,7 @@ import info.novikovi.mp3.Utils.ExtString;
 /**
  * <p>Название трека.</p>
  */
-public class TitleFrame extends CommonFrame
+public class TitleFrame extends CommonFrame implements CommonTextFrame
 {
 	/**
 	 * название трека

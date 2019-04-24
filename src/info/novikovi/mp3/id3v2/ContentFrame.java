@@ -15,7 +15,7 @@ import info.novikovi.mp3.Utils.ExtString;
 /**
  * <p>Тип содержимого трека.</p>
  */
-public class ContentFrame extends CommonFrame
+public class ContentFrame extends CommonFrame implements CommonTextFrame
 {
 	/**
 	 * название альбома
