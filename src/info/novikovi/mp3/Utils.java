@@ -105,6 +105,17 @@ public class Utils
 	}
 	
 	/**
+	 * <p>Возвращает номер кодировки текста во фрейме.</p>
+	 * @param buf буфер данных
+	 * @param offset смещение текста
+	 * @return номер кодировки; см. {@link TextEncoding}
+	 */
+	public static int getFrameEncoding(byte[] buf, int offset)
+	{
+		return buf[offset] & 0xFF;
+	}
+	
+	/**
 	 * <p>Читает строку из данных фрейма с учётом кодировки.</p>
 	 * @param buf буфер данных
 	 * @param offset смещение текста
@@ -114,8 +125,8 @@ public class Utils
 	 */
 	public static ExtString readFrameText(byte[] buf, int offset, int len) throws UnknownTextEncoding
 	{
-		// кодировка текста
-		int text_enc = buf[offset++] & 0xFF;
+		// кодировка текста; сразу увеличиваем смещение
+		int text_enc = getFrameEncoding(buf, offset++);
 		// уменьшаем размер на один байт
 		len--;
 		

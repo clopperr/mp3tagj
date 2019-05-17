@@ -25,4 +25,9 @@ public class TextEncoding
 	 * UTF-8 encoded Unicode. Terminated with $00.
 	 */
 	public static final int UTF_8 = 3;
+	
+	/**
+	 * Перечисление для получения имён кодировок.
+	 */
+	public static enum ENCODINGS {ISO8859, UTF_16, UTF_16BE, UTF_8};
 }

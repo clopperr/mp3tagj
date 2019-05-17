@@ -7,6 +7,7 @@ import java.io.IOException;
 import info.novikovi.mp3.id3v1.TagID3V1;
 import info.novikovi.mp3.id3v2.CommonFrame;
 import info.novikovi.mp3.id3v2.CommonTextFrame;
+import info.novikovi.mp3.id3v2.SimpleTextFrame;
 import info.novikovi.mp3.id3v2.TagID3V2_4;
 import info.novikovi.mp3.id3v2.UnsupportedFlag;
 import info.novikovi.mp3.id3v2.WrongDataSize;
@@ -124,8 +125,8 @@ public class MP3
 		for (int i = 0; i < mp3.id3v2_tag.getFrameCount(); i++)
 		{
 			CommonFrame frame = mp3.id3v2_tag.getFrame(i);
-			if (frame instanceof CommonTextFrame)
-				System.out.println(frame + " " + ((CommonTextFrame)frame).getEncoding());
+			if (frame instanceof SimpleTextFrame)
+				System.out.println(frame + " " + ((SimpleTextFrame)frame).getEncoding());
 			else
 				System.out.println(frame);
 		}

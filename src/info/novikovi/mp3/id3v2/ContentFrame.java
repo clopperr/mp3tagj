@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import info.novikovi.mp3.Genre;
-import info.novikovi.mp3.TextEncoding;
 import info.novikovi.mp3.UnknownTextEncoding;
 import info.novikovi.mp3.Utils;
 import info.novikovi.mp3.Utils.ExtString;
@@ -15,17 +14,12 @@ import info.novikovi.mp3.Utils.ExtString;
 /**
  * <p>Тип содержимого трека.</p>
  */
-public class ContentFrame extends CommonFrame implements CommonTextFrame
+public class ContentFrame extends SimpleTextFrame
 {
 	/**
 	 * название альбома
 	 */
 	private String content;
-	
-	/**
-	 * исходная кодировка строки; см. {@link TextEncoding}
-	 */
-	private int encoding;
 	
 	private List<Genre> genres = new ArrayList<>();
 
@@ -44,7 +38,6 @@ public class ContentFrame extends CommonFrame implements CommonTextFrame
 		// текст
 		ExtString str = Utils.readFrameText(buf, offset, getDataSize());
 		content = str.getString();
-		encoding = str.getEncoding();
 		// выявляем ссылки на фиксированные жанры 
 		Pattern p = Pattern.compile("\\((\\d+)\\)");
 		Matcher m = p.matcher(content);
@@ -60,7 +53,6 @@ public class ContentFrame extends CommonFrame implements CommonTextFrame
 	}
 	
 	public String getContent() {return content;}
-	public int getEncoding() {return encoding;}
 	
 	public int getGenresCount() {return genres.size();}
 	public Genre getGenre(int index) {return genres.get(index);}

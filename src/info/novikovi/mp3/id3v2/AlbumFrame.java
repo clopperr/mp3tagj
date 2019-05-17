@@ -1,21 +1,15 @@
 package info.novikovi.mp3.id3v2;
 
-import info.novikovi.mp3.TextEncoding;
 import info.novikovi.mp3.UnknownTextEncoding;
 import info.novikovi.mp3.Utils;
 import info.novikovi.mp3.Utils.ExtString;
 
-public class AlbumFrame extends CommonFrame implements CommonTextFrame
+public class AlbumFrame extends SimpleTextFrame
 {
 	/**
 	 * название альбома
 	 */
 	private String album;
-	
-	/**
-	 * исходная кодировка строки; см. {@link TextEncoding}
-	 */
-	private int encoding;
 
 	/**
 	 * <p>Конструктор.</p>
@@ -32,15 +26,15 @@ public class AlbumFrame extends CommonFrame implements CommonTextFrame
 		// текст
 		ExtString str = Utils.readFrameText(buf, offset, getDataSize());
 		album = str.getString();
-		encoding = str.getEncoding();
 	}
 	
 	public String getAlbum() {return album;}
-	public int getEncoding() {return encoding;}
 
 	@Override
 	public String toString()
 	{
 		return getId() + ": " + album;
 	}
+
+	
 }

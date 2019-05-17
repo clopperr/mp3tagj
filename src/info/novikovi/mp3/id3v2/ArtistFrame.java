@@ -3,6 +3,7 @@ package info.novikovi.mp3.id3v2;
 import info.novikovi.mp3.TextEncoding;
 import info.novikovi.mp3.UnknownTextEncoding;
 import info.novikovi.mp3.Utils;
+import info.novikovi.mp3.TextEncoding.ENCODINGS;
 import info.novikovi.mp3.Utils.ExtString;
 
 public class ArtistFrame extends CommonFrame implements CommonTextFrame
@@ -36,11 +37,19 @@ public class ArtistFrame extends CommonFrame implements CommonTextFrame
 	}
 	
 	public String getArtist() {return artist;}
-	public int getEncoding() {return encoding;}
-
+	
 	@Override
 	public String toString()
 	{
 		return getId() + ": " + artist;
 	}
+	
+	@Override
+	public ENCODINGS getEncoding()
+	{
+		return TextEncoding.ENCODINGS.values()[encoding];
+	}
+
+	@Override
+	public int getEncodingCode() {return encoding;}
 }
