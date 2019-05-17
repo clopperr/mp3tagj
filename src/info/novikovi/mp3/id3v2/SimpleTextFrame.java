@@ -6,7 +6,6 @@ import info.novikovi.mp3.Utils;
 
 public abstract class SimpleTextFrame extends CommonFrame implements CommonTextFrame
 {
-
 	/**
 	 * исходная кодировка строки; см. {@link TextEncoding}
 	 */

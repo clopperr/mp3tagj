@@ -123,7 +123,7 @@ public class Utils
 	 * @return строка
 	 * @throws UnknownTextEncoding 
 	 */
-	public static ExtString readFrameText(byte[] buf, int offset, int len) throws UnknownTextEncoding
+	public static String readFrameText(byte[] buf, int offset, int len) throws UnknownTextEncoding
 	{
 		// кодировка текста; сразу увеличиваем смещение
 		int text_enc = getFrameEncoding(buf, offset++);
@@ -160,7 +160,7 @@ public class Utils
 			default:
 				throw new UnknownTextEncoding("unknown text encoding: " + text_enc);
 		}
-		return new ExtString(result, text_enc);
+		return result;
 	}
 	
 	/**
@@ -172,27 +172,4 @@ public class Utils
 		iso = Charset.forName(charset_name);
 	}
 	
-	/**
-	 * <p>Сервисный класс для передачи строки с исходной кодировкой.</p>
-	 */
-	public static class ExtString
-	{
-		/**
-		 * строка
-		 */
-		private String str;
-		/**
-		 * исходная кодировка строки; см. {@link TextEncoding}
-		 */
-		private int encoding;
-		
-		ExtString(String astr, int enc)
-		{
-			str = astr;
-			encoding = enc;
-		}
-		
-		public String getString() {return str;}
-		public int getEncoding() {return encoding;}
-	}
 }

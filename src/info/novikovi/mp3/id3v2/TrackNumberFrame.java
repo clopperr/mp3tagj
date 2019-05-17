@@ -25,10 +25,8 @@ public class TrackNumberFrame extends CommonFrame
 	protected TrackNumberFrame(byte[] buf, int offset) throws UnsupportedFlag, UnknownTextEncoding
 	{
 		super(buf, offset);
-		// смещаемся к данным
-		offset += FRAME_HEADER_LENGTH;
 		// текст
-		String num = Utils.readFrameText(buf, offset, getDataSize()).getString();
+		String num = Utils.readFrameText(buf, offset + FRAME_HEADER_LENGTH, getDataSize());
 		// ищем слеш
 		String[] nums = num.split("/");
 		if (nums.length == 1)

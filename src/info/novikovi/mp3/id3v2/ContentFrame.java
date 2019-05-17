@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import info.novikovi.mp3.Genre;
 import info.novikovi.mp3.UnknownTextEncoding;
 import info.novikovi.mp3.Utils;
-import info.novikovi.mp3.Utils.ExtString;
 
 /**
  * <p>Тип содержимого трека.</p>
@@ -33,11 +32,8 @@ public class ContentFrame extends SimpleTextFrame
 	protected ContentFrame(byte[] buf, int offset) throws UnsupportedFlag, UnknownTextEncoding
 	{
 		super(buf, offset);
-		// смещаемся к данным
-		offset += FRAME_HEADER_LENGTH;
 		// текст
-		ExtString str = Utils.readFrameText(buf, offset, getDataSize());
-		content = str.getString();
+		content = Utils.readFrameText(buf, offset + FRAME_HEADER_LENGTH, getDataSize());
 		// выявляем ссылки на фиксированные жанры 
 		Pattern p = Pattern.compile("\\((\\d+)\\)");
 		Matcher m = p.matcher(content);
