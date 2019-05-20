@@ -18,13 +18,21 @@ import info.novikovi.mp3.Utils;
 public class TagID3V2_4
 {
 	/**
-	 * размер блока id3 v2
+	 * размер заголовка id3 v2
 	 */
 	private static final int ID3V2_LENGTH = 10;
+	/**
+	 * размер подвала id3 v2
+	 */
+	private static final int ID3V2_FOOTER_LENGTH = 10;
 	/**
 	 * сигнатура блока id3 v2
 	 */
 	private static final String ID3V2_SIGNATURE = "ID3";
+	/**
+	 * сигнатура подвала блока id3 v2
+	 */
+	private static final String ID3V2_FOOTER_SIGNATURE = "3DI";
 	/**
 	 * корректная старшая версия
 	 */
@@ -87,6 +95,16 @@ public class TagID3V2_4
 	private int minor_version;
 	
 	/**
+	 * размер тэга в исходном файле
+	 */
+	private int original_size;
+	
+	/**
+	 * размер резерва
+	 */
+	private int padding_size;
+	
+	/**
 	 * список фреймов
 	 */
 	private List<CommonFrame> frames = new ArrayList<>();
@@ -133,13 +151,19 @@ public class TagID3V2_4
 							throw new UnsupportedFlag("flag Unsynchronization found in tag id3 v. 2.4");
 						// размер заголовка
 						int size = Utils.synchSafeSize2Int(header, offset);
+						// полный размер тэга в исходном файле
+						original_size = ID3V2_LENGTH + size + (flag_footer ? ID3V2_FOOTER_LENGTH : 0);
+						// начинаем вычислять размер резерва
+						padding_size = size;
 						// данные тэга
 						byte[] tag_data = Utils.readBlock(is, size);
 						offset = 0;
 						// дополнительный заголовок
 						if (flag_extended)
 						{
+							System.out.println("[WARNING] extended header found!");
 							// размер заголовка
+							padding_size -= Utils.synchSafeSize2Int(tag_data, offset);
 							offset += Utils.SYNC_SAFE_INT_LENGTH;
 							// количество байтов для флагов
 							int flag_bytes = tag_data[offset++] & 0xFF;
@@ -183,6 +207,18 @@ public class TagID3V2_4
 							CommonFrame frame = FrameFactory.getFrame(tag_data, offset);
 							frames.add(frame);
 							offset += frame.getSize();
+							padding_size -= frame.getSize();
+						}
+						// уменьшаем резерв на величину подвала
+						if (flag_footer)
+						{
+							padding_size -= ID3V2_FOOTER_LENGTH;
+							// резерва быть не должно
+							if (padding_size != 0)
+							{
+								System.out.println("[WARNING] non zero padding with footer!");
+								padding_size = 0;
+							}
 						}
 					}
 				}
@@ -203,14 +239,20 @@ public class TagID3V2_4
 	public boolean isFlagCRCSet() {return flag_crc;}
 	public boolean isFlagRestrictionsSet() {return flag_restrictions;}
 	
-	public int getRestrictionTagSizeSet() {return restrictions_tag_size;}
+	public int getRestrictionTagSize() {return restrictions_tag_size;}
 	public boolean isRestrictionsEncodingSet() {return restrictions_encoding;}
-	public int getRestrictionsFieldSizeSet() {return restrictions_field_size;}
+	public int getRestrictionsFieldSize() {return restrictions_field_size;}
 	public boolean isRestrictionsImageEncSet() {return restrictions_image_enc;}
-	public int getRestrictionsImageSizeSet() {return restrictions_image_size;}
+	public int getRestrictionsImageSize() {return restrictions_image_size;}
 	
 	public int getMajorVersion() {return major_version;}
 	public int getMinorVersion() {return minor_version;}
+	
+	/**
+	 * <p>Возвращает полный размер тэга в исходном файле</p>
+	 * @return полный размер тэга
+	 */
+	public int getOriginalSize() {return original_size;}
 	
 	/**
 	 * <p>Возвращает количество фреймов.</p>
@@ -237,5 +279,27 @@ public class TagID3V2_4
 			if (frame.getId().equals(frame_id)) return frame;
 		// не нашли
 		return null;
+	}
+	
+	/**
+	 * <p>Устанавливает желаемый размер резерва. При наличии подвала резерв должен быть равен 0.</p>
+	 * @param padding_size размер резерва в байтах
+	 * @throws WrongPaddingSize ненулевой резерв при наличии подвала
+	 */
+	public void setPaddingSize(int padding_size) throws WrongPaddingSize
+	{
+		if (padding_size != 0 && isFlagFooterSet()) throw new WrongPaddingSize("non zero padding with footer present");
+		this.padding_size = padding_size;
+	}
+	
+	/**
+	 * <p>Устанавливает или сбрасывает флаг подвала. При установленном флаге резерв обнуляется.</p>
+	 * @param footer true, если нужно установить флаг
+	 */
+	public void setFlagFooter(boolean footer)
+	{
+		// если нужен подвал, резерв должен быть обнулён
+		if (footer) padding_size = 0;
+		flag_footer = footer;
 	}
 }

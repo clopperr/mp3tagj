@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import info.novikovi.mp3.id3v1.TagID3V1;
 import info.novikovi.mp3.id3v2.CommonFrame;
-import info.novikovi.mp3.id3v2.CommonTextFrame;
 import info.novikovi.mp3.id3v2.SimpleTextFrame;
 import info.novikovi.mp3.id3v2.TagID3V2_4;
 import info.novikovi.mp3.id3v2.UnsupportedFlag;
@@ -44,7 +43,7 @@ public class MP3
 	public MP3(File mp3) throws FileNotFoundException, IOException, UnsupportedFlag, WrongDataSize, UnknownTextEncoding
 	{
 		mp3_file = mp3;
-		// используем кодировку cp1251
+		// в качестве ANSI используем кодировку cp1251
 		Utils.setAnsiCharset("cp1251");
 		// читаем тэги версии 1
 		id3v1_tag = new TagID3V1(mp3_file);
@@ -69,9 +68,21 @@ public class MP3
 	@Override
 	public String toString()
 	{
-		return mp3_file + "; id3 v1: " + (id3v1_tag.hasTag() ? "yes" : "no")
-						+ "; id3 v2: " + (id3v2_tag.hasTag() ? "yes" : "no");
+		return mp3_file + "; id3 v1: " + (hasV1Tag() ? "yes" : "no")
+						+ "; id3 v2: " + (hasV2Tag() ? "yes" : "no");
 	}
+	
+	/**
+	 * <p>Проверяет наличие тэга версии 1.</p>
+	 * @return true, если объект содержит тэг версии 1
+	 */
+	public boolean hasV1Tag() {return id3v1_tag.hasTag();}
+	
+	/**
+	 * <p>Проверяет наличие тэга версии 2.</p>
+	 * @return true, если объект содержит тэг версии 2
+	 */
+	public boolean hasV2Tag() {return id3v2_tag.hasTag();}
 	
 	/**
 	 * <p>Возвращает название трека.</p>
