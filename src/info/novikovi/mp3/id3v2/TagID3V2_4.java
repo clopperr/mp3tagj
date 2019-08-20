@@ -3,8 +3,10 @@ package info.novikovi.mp3.id3v2;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -125,104 +127,130 @@ public class TagID3V2_4
 			try
 			(InputStream is = new FileInputStream(mp3_file);)
 			{
-				// читаем заголовок
-				byte[] header = Utils.readBlock(is, ID3V2_LENGTH);
-				int offset = 0;
-				// проверяем сигнатуру
-				String sign = new String(header, offset, ID_LENGTH, Charset.forName("utf-8"));
-				offset += ID_LENGTH;
-				if (sign.equals(ID3V2_SIGNATURE))
-				{	
-					// версия заголовка
-					major_version = header[offset++] & 0xFF;
-					minor_version = header[offset++] & 0xFF;
-					if (major_version == ID3V2_MAJOR)
+				readTag(is);
+			}
+	}
+	
+	/**
+	 * <p>Конструктор.</p>
+	 * @param is поток данных
+	 * @throws IOException
+	 * @throws UnsupportedFlag
+	 * @throws WrongDataSize
+	 * @throws UnknownTextEncoding
+	 */
+	public TagID3V2_4(InputStream is) throws IOException, UnsupportedFlag, WrongDataSize, UnknownTextEncoding
+	{
+		readTag(is);
+	}
+	
+	/**
+	 * <p>Читает содержимое тэга из потока.</p>
+	 * @param is поток данных
+	 * @throws IOException
+	 * @throws UnsupportedFlag
+	 * @throws WrongDataSize
+	 * @throws UnknownTextEncoding
+	 */
+	private void readTag(InputStream is) throws IOException, UnsupportedFlag, WrongDataSize, UnknownTextEncoding
+	{
+		// читаем заголовок
+		byte[] header = Utils.readBlock(is, ID3V2_LENGTH);
+		int offset = 0;
+		// проверяем сигнатуру
+		String sign = new String(header, offset, ID_LENGTH, Charset.forName("utf-8"));
+		offset += ID_LENGTH;
+		if (sign.equals(ID3V2_SIGNATURE))
+		{	
+			// версия заголовка
+			major_version = header[offset++] & 0xFF;
+			minor_version = header[offset++] & 0xFF;
+			if (major_version == ID3V2_MAJOR)
+			{
+				// следует игнорировать версии тэга, отличные от четвёртой
+				has_tag = true;
+				// флаги
+				int flags = header[offset++] & 0xFF;
+				flag_unsynchronisation = (flags & FLAG_UNSYNCHRONISATION) != 0;
+				flag_extended = (flags & FLAG_EXTENDED) != 0;
+				flag_experimental = (flags & FLAG_EXPERIMENTAL) != 0;
+				flag_footer = (flags & FLAG_FOOTER) != 0;
+				// не со всякой фигнёй мы умеем работать
+				if (flag_unsynchronisation)
+					throw new UnsupportedFlag("flag Unsynchronization found in tag id3 v. 2.4");
+				// размер заголовка
+				int size = Utils.synchSafeSize2Int(header, offset);
+				// полный размер тэга в исходном файле
+				original_size = ID3V2_LENGTH + size + (flag_footer ? ID3V2_FOOTER_LENGTH : 0);
+				// начинаем вычислять размер резерва
+				padding_size = size;
+				// данные тэга
+				byte[] tag_data = Utils.readBlock(is, size);
+				offset = 0;
+				// дополнительный заголовок
+				if (flag_extended)
+				{
+					System.out.println("[WARNING] extended header found!");
+					// размер заголовка
+					padding_size -= Utils.synchSafeSize2Int(tag_data, offset);
+					offset += Utils.SYNC_SAFE_INT_LENGTH;
+					// количество байтов для флагов
+					int flag_bytes = tag_data[offset++] & 0xFF;
+					// флаги
+					flags = tag_data[offset] & 0xFF;
+					offset += flag_bytes;
+					flag_update = (flags & FLAG_UPDATE) != 0;
+					flag_crc = (flags & FLAG_CRC) != 0;
+					flag_restrictions = (flags & FLAG_RESTRICTONS) != 0;
+					// данных для флага update быть не должно
+					if (flag_update)
 					{
-						// следует игнорировать версии тэга, отличные от четвёртой
-						has_tag = true;
-						// флаги
-						int flags = header[offset++] & 0xFF;
-						flag_unsynchronisation = (flags & FLAG_UNSYNCHRONISATION) != 0;
-						flag_extended = (flags & FLAG_EXTENDED) != 0;
-						flag_experimental = (flags & FLAG_EXPERIMENTAL) != 0;
-						flag_footer = (flags & FLAG_FOOTER) != 0;
-						// не со всякой фигнёй мы умеем работать
-						if (flag_unsynchronisation)
-							throw new UnsupportedFlag("flag Unsynchronization found in tag id3 v. 2.4");
-						// размер заголовка
-						int size = Utils.synchSafeSize2Int(header, offset);
-						// полный размер тэга в исходном файле
-						original_size = ID3V2_LENGTH + size + (flag_footer ? ID3V2_FOOTER_LENGTH : 0);
-						// начинаем вычислять размер резерва
-						padding_size = size;
-						// данные тэга
-						byte[] tag_data = Utils.readBlock(is, size);
-						offset = 0;
-						// дополнительный заголовок
-						if (flag_extended)
+						int data_size = tag_data[offset++] & 0xFF;
+						offset += data_size;
+					}
+					// CRC пропустим
+					if (flag_crc)
+					{
+						int data_size = tag_data[offset++] & 0xFF;
+						offset += data_size;
+					}
+					// ограничения
+					if (flag_restrictions)
+					{
+						int data_size = tag_data[offset++] & 0xFF;
+						if (data_size == 1)
 						{
-							System.out.println("[WARNING] extended header found!");
-							// размер заголовка
-							padding_size -= Utils.synchSafeSize2Int(tag_data, offset);
-							offset += Utils.SYNC_SAFE_INT_LENGTH;
-							// количество байтов для флагов
-							int flag_bytes = tag_data[offset++] & 0xFF;
-							// флаги
-							flags = tag_data[offset] & 0xFF;
-							offset += flag_bytes;
-							flag_update = (flags & FLAG_UPDATE) != 0;
-							flag_crc = (flags & FLAG_CRC) != 0;
-							flag_restrictions = (flags & FLAG_RESTRICTONS) != 0;
-							// данных для флага update быть не должно
-							if (flag_update)
-							{
-								int data_size = tag_data[offset++] & 0xFF;
-								offset += data_size;
-							}
-							// CRC пропустим
-							if (flag_crc)
-							{
-								int data_size = tag_data[offset++] & 0xFF;
-								offset += data_size;
-							}
-							// ограничения
-							if (flag_restrictions)
-							{
-								int data_size = tag_data[offset++] & 0xFF;
-								if (data_size == 1)
-								{
-									int restrictions = tag_data[offset++] & 0xFF;
-									restrictions_tag_size = restrictions & RESTRICTON_TAG_SIZE;
-									restrictions_encoding = (restrictions & RESTRICTON_ENCODING) != 0;
-									restrictions_field_size = restrictions & RESTRICTON_FIELD_SIZE;
-									restrictions_image_enc = (restrictions & RESTRICTON_IMAGE_ENC) != 0;
-									restrictions_image_size = restrictions & RESTRICTON_IMAGE_SIZE;
-								}
-								offset += data_size;
-							}
+							int restrictions = tag_data[offset++] & 0xFF;
+							restrictions_tag_size = restrictions & RESTRICTON_TAG_SIZE;
+							restrictions_encoding = (restrictions & RESTRICTON_ENCODING) != 0;
+							restrictions_field_size = restrictions & RESTRICTON_FIELD_SIZE;
+							restrictions_image_enc = (restrictions & RESTRICTON_IMAGE_ENC) != 0;
+							restrictions_image_size = restrictions & RESTRICTON_IMAGE_SIZE;
 						}
-						// дальше идут фреймы
-						while (offset < size && (tag_data[offset] & 0xFF) >= 48)
-						{
-							CommonFrame frame = FrameFactory.getFrame(tag_data, offset);
-							frames.add(frame);
-							offset += frame.getSize();
-							padding_size -= frame.getSize();
-						}
-						// уменьшаем резерв на величину подвала
-						if (flag_footer)
-						{
-							padding_size -= ID3V2_FOOTER_LENGTH;
-							// резерва быть не должно
-							if (padding_size != 0)
-							{
-								System.out.println("[WARNING] non zero padding with footer!");
-								padding_size = 0;
-							}
-						}
+						offset += data_size;
+					}
+				}
+				// дальше идут фреймы
+				while (offset < size && (tag_data[offset] & 0xFF) >= 48)
+				{
+					CommonFrame frame = FrameFactory.getFrame(tag_data, offset);
+					frames.add(frame);
+					offset += frame.getSize();
+					padding_size -= frame.getSize();
+				}
+				// уменьшаем резерв на величину подвала
+				if (flag_footer)
+				{
+					padding_size -= ID3V2_FOOTER_LENGTH;
+					// резерва быть не должно
+					if (padding_size != 0)
+					{
+						System.out.println("[WARNING] non zero padding with footer!");
+						padding_size = 0;
 					}
 				}
 			}
+		}
 	}
 	
 	/**
@@ -301,5 +329,28 @@ public class TagID3V2_4
 		// если нужен подвал, резерв должен быть обнулён
 		if (footer) padding_size = 0;
 		flag_footer = footer;
+	}
+	
+	/**
+	 * <p>Сохраняет тэг в файл. Содержимое файла полностью затирается.</p>
+	 * @param f файл
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public void saveTag(File f) throws FileNotFoundException, IOException
+	{
+		try(FileOutputStream fos = new FileOutputStream(f);)
+		{
+			saveTag(fos);
+		}
+	}
+	
+	/**
+	 * <p>Сохраняет тэг в поток.</p>
+	 * @param os поток данных
+	 */
+	public void saveTag(OutputStream os)
+	{
+		// TODO
 	}
 }

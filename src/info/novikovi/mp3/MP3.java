@@ -131,7 +131,7 @@ public class MP3
 	
 	public static void main(String[] args) throws Exception
 	{
-		MP3 mp3 = new MP3("c:\\TEMP\\a\\mp3\\alena-sviridova-staryy-polkovnik.mp3");
+		MP3 mp3 = new MP3("d:\\Музыка\\Kongos\\Albums (CD)\\2016 - Egomaniac - (320 kbps)\\05. Autocorrect.mp3");
 		
 		for (int i = 0; i < mp3.id3v2_tag.getFrameCount(); i++)
 		{
