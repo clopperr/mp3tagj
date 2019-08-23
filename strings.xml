@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strings>
+	<language name="ru" full_name="Русский" description="clopper@novikovi.info">
+		<frames>
+			<main>
+				<title>Тэги MP3</title>
+			</main>
+		</frames>
+		<dialog>
+			<buttons>
+				<ok>Ok</ok>
+				<cancel>Отмена</cancel>
+				<yes>Да</yes>
+				<no>Нет</no>
+				<yes_to_all>Да для всех</yes_to_all>
+				<no_to_all>Нет для всех</no_to_all>
+				<close>Закрыть</close>
+				<choose>Выбрать</choose>
+			</buttons>
+			<preferences>
+				<title>Настройки</title>
+				<interface>Интерфейс</interface>
+				<language>Язык (Language)</language>
+				<font>Шрифт</font>
+			</preferences>
+			<language>
+				<label>Выберите язык (Choose language)</label>
+			</language>
+			<font>
+				<label_comp>Выберите шрифт для текстовых полей</label_comp>
+				<label_text>Выберите шрифт для исходного текста</label_text>
+				<name>Название</name>
+				<size>Размер</size>
+			</font>
+		</dialog>
+		<message>
+			<error_title>Ошибка</error_title>
+			<confirmation_title>Подтверждение</confirmation_title>
+			<warning_title>Предупреждение</warning_title>
+			<cannot_read_file>Не удалось прочесть файл '%s'</cannot_read_file>
+		</message>
+    </language>
+    <language name="en" full_name="English" description="clopper@novikovi.info">
+		<frames>
+			<main>
+				<title>MP3 tags</title>
+			</main>
+		</frames>
+		<dialog>
+			<buttons>
+				<ok>Ok</ok>
+				<cancel>Cancel</cancel>
+				<yes>Yes</yes>
+				<no>No</no>
+				<yes_to_all>Yes to all</yes_to_all>
+				<no_to_all>No to all</no_to_all>
+				<close>Close</close>
+				<choose>Choose</choose>
+			</buttons>
+			<preferences>
+				<title>Preferences</title>
+				<interface>Interface</interface>
+				<language>Language</language>
+				<font>Font</font>
+			</preferences>
+			<language>
+				<label>Choose language</label>
+			</language>
+			<font>
+				<label_comp>Choose font for text fields</label_comp>
+				<label_text>Choose font for source text</label_text>
+				<name>Name</name>
+				<size>Size</size>
+			</font>						
+		</dialog>
+		<message>
+			<error_title>Error</error_title>
+			<confirmation_title>Confirm</confirmation_title>
+			<warning_title>Warning</warning_title>
+			<cannot_read_file>Can't read file '%s'</cannot_read_file>
+		</message>
+	</language>
+</strings>

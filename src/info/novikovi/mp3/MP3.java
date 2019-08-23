@@ -131,11 +131,12 @@ public class MP3
 	
 	public static void main(String[] args) throws Exception
 	{
-		MP3 mp3 = new MP3("d:\\Музыка\\Kongos\\Albums (CD)\\2016 - Egomaniac - (320 kbps)\\05. Autocorrect.mp3");
+		MP3 mp3 = new MP3("c:\\TEMP\\a\\mp3\\kongos_-_autocorrect_(topicmusic.net).mp3");
 		
 		for (int i = 0; i < mp3.id3v2_tag.getFrameCount(); i++)
 		{
 			CommonFrame frame = mp3.id3v2_tag.getFrame(i);
+			String s = "" + frame.toString();
 			if (frame instanceof SimpleTextFrame)
 				System.out.println(frame + " " + ((SimpleTextFrame)frame).getEncoding());
 			else
