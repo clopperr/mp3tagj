@@ -7,7 +7,7 @@ import java.io.IOException;
 import info.novikovi.mp3.id3v1.TagID3V1;
 import info.novikovi.mp3.id3v2.CommonFrame;
 import info.novikovi.mp3.id3v2.SimpleTextFrame;
-import info.novikovi.mp3.id3v2.TagID3V2_4;
+import info.novikovi.mp3.id3v2.TagID3V2;
 import info.novikovi.mp3.id3v2.UnsupportedFlag;
 import info.novikovi.mp3.id3v2.WrongDataSize;
 
@@ -29,7 +29,7 @@ public class MP3
 	/**
 	 * тэг id3 версии 2
 	 */
-	private TagID3V2_4 id3v2_tag;
+	private TagID3V2 id3v2_tag;
 	
 	/**
 	 * <p>Конструктор.</p>
@@ -48,7 +48,7 @@ public class MP3
 		// читаем тэги версии 1
 		id3v1_tag = new TagID3V1(mp3_file);
 		// читаем тэги версии 2
-		id3v2_tag = new TagID3V2_4(mp3_file);
+		id3v2_tag = new TagID3V2(mp3_file);
 	}
 	
 	/**
