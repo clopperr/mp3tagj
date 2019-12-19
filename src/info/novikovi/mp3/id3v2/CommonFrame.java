@@ -89,7 +89,11 @@ public class CommonFrame
 		id = new String(buf, offset, FRAME_ID_LENGTH, Charset.forName("utf-8"));
 		offset += FRAME_ID_LENGTH;
 		// размер данных
-		data_size = Utils.synchSafeSize2Int(buf, offset);
+		// во фреймах APIC размер задан некорректно (проверено на двух разных файлах)
+		if (id.equals("APIC"))
+			data_size = Utils.unsafeSize2Int(buf, offset);
+		else
+			data_size = Utils.synchSafeSize2Int(buf, offset);
 		offset += Utils.SYNC_SAFE_INT_LENGTH;
 		// флаги
 		int flags = ((buf[offset++] & 0xFF) << 8) + (buf[offset++] & 0xFF); 

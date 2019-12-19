@@ -105,6 +105,22 @@ public class Utils
 	}
 	
 	/**
+	 * <p>Склеивает четыре байта в целое число. Используется порядок big-endian. Отрицательные числа не поддерживаются.</p>
+	 * @param buf байтовый буфер
+	 * @param offset смещение в буфере
+	 * @return целое число
+	 */
+	public static int unsafeSize2Int(byte[] buf, int offset)
+	{
+		// старший байт не должен иметь знака
+		if ((buf[offset] & 0x80) != 0) throw new NumberFormatException("high bit is non zero");
+		int result = 0;
+		// перебираем байты
+		for (int i = 0; i < SYNC_SAFE_INT_LENGTH; i++) result = (result << 8) + (buf[offset + i] & 0xFF);
+		return result;
+	}
+	
+	/**
 	 * <p>Возвращает номер кодировки текста во фрейме.</p>
 	 * @param buf буфер данных
 	 * @param offset смещение текста

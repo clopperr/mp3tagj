@@ -4,6 +4,14 @@
 		<frames>
 			<main>
 				<title>Тэги MP3</title>
+				<load_list>Список файлов</load_list>
+				<table>
+					<column_file>Файл</column_file>
+					<column_name>Название трека</column_name>
+					<column_artist>Исполнитель</column_artist>
+					<column_album>Альбом</column_album>
+					<column_number>Номер трека</column_number>
+				</table>
 			</main>
 		</frames>
 		<dialog>
@@ -32,6 +40,13 @@
 				<name>Название</name>
 				<size>Размер</size>
 			</font>
+			<wait>
+				<title>Подождите</title>
+			</wait>
+			<open_file>
+				<title>Открыть</title>
+				<ok_button>Открыть</ok_button>
+			</open_file>
 		</dialog>
 		<message>
 			<error_title>Ошибка</error_title>
@@ -44,6 +59,14 @@
 		<frames>
 			<main>
 				<title>MP3 tags</title>
+				<load_list>File list</load_list>
+				<table>
+					<column_file>File</column_file>
+					<column_name>Track name</column_name>
+					<column_artist>Artist</column_artist>
+					<column_album>Album</column_album>
+					<column_number>Track number</column_number>
+				</table>
 			</main>
 		</frames>
 		<dialog>
@@ -71,7 +94,14 @@
 				<label_text>Choose font for source text</label_text>
 				<name>Name</name>
 				<size>Size</size>
-			</font>						
+			</font>
+			<wait>
+				<title>Wait</title>
+			</wait>
+			<open_file>
+				<title>Open</title>
+				<ok_button>Open</ok_button>
+			</open_file>						
 		</dialog>
 		<message>
 			<error_title>Error</error_title>

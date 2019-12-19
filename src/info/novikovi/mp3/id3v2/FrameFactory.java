@@ -12,27 +12,28 @@ public class FrameFactory
 	/**
 	 * название трека
 	 */
-	private static final String FRAME_TITLE = "TIT2";
+	public static final String FRAME_TITLE = "TIT2";
 	/**
 	 * альбом
 	 */
-	private static final String FRAME_ALBUM = "TALB";
+	public static final String FRAME_ALBUM = "TALB";
 	/**
 	 * номер трека
 	 */
-	private static final String FRAME_TRACK_NUM = "TRCK";
+	public static final String FRAME_TRACK_NUM = "TRCK";
 	/**
 	 * исполнитель
 	 */
-	private static final String FRAME_ARTIST = "TPE1";
+	public static final String FRAME_ARTIST = "TPE1";
 	/**
 	 * тип содержимого
 	 */
-	private static final String FRAME_CONTENT = "TCON";
+	public static final String FRAME_CONTENT = "TCON";
 	/**
 	 * год
 	 */
-	private static final String FRAME_YEAR = "TYER";	
+	public static final String FRAME_YEAR = "TYER";
+	
 	/**
 	 * <p>Метод подбирает класс для работы с фреймом.</p>
 	 * @param buf буфер данных

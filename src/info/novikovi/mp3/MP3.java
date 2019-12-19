@@ -129,14 +129,43 @@ public class MP3
 		return id3v1_tag.getV1Genre();
 	}
 	
+	/**
+	 * <p>Возвращает количество фреймов в тэге второй версии.</p>
+	 * @return количество фреймов в тэге второй версии
+	 */
+	public int getV2FrameCount()
+	{
+		return id3v2_tag.getFrameCount();
+	}
+	
+	/**
+	 * <p>Возвращает фрейм с запрошенным номером из тэга второй версии.</p>
+	 * @param index номер фрейма
+	 * @return фрейм из тега второй версии
+	 */
+	public CommonFrame getV2Frame(int index)
+	{
+		return id3v2_tag.getFrame(index);
+	}
+	
+	/**
+	 * <p>Возвращает фрейм с запрошенным идентификатором из тэга второй версии.</p>
+	 * @param id идентификатор фрейма
+	 * @return фрейм из тега второй версии
+	 */
+	public CommonFrame getV2Frame(String id)
+	{
+		return id3v2_tag.getFrameByName(id);
+	}
+	
 	public static void main(String[] args) throws Exception
 	{
-		MP3 mp3 = new MP3("c:\\TEMP\\a\\mp3\\kongos_-_autocorrect_(topicmusic.net).mp3");
+		MP3 mp3 = new MP3("c:\\Users\\novikov2-an\\Downloads\\Kongos_-_Come_With_Me_Now_47894911.mp3 ");
 		
 		for (int i = 0; i < mp3.id3v2_tag.getFrameCount(); i++)
 		{
 			CommonFrame frame = mp3.id3v2_tag.getFrame(i);
-			String s = "" + frame.toString();
+//			String s = "" + frame.toString();
 			if (frame instanceof SimpleTextFrame)
 				System.out.println(frame + " " + ((SimpleTextFrame)frame).getEncoding());
 			else

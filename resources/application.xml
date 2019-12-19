@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application>
 	<name>MP3 Tags</name>
-	<version>1.0</version>
+	<version>2.0</version>
 	<history>		
+		<version number="2.0">
+			<date>2019.xx.xx</date>
+			<description>
+				первая версия
+			</description>
+		</version>		
 		<version number="1.0">
 			<date>2019.08.23</date>
 			<description>

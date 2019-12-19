@@ -1,29 +1,26 @@
 package info.novikovi.mp3.id3v2;
 
-import java.nio.charset.Charset;
+import info.novikovi.mp3.UnknownTextEncoding;
+import info.novikovi.mp3.Utils;
 
+/**
+ * <p>Год записи трека.</p>
+ * <p>Год хранится в виде строки с кодировкой. Так как год - это число, исходную кодировку не сохраняем.</p>
+ */
 public class YearFrame extends CommonFrame
 {
-	/**
-	 * размер данных во фрейме
-	 */
-	private static final int YEAR_SIZE = 4;
-	
 	/**
 	 * год записи
 	 */
 	private int year;
 	
-	public YearFrame(byte[] buf, int offset) throws UnsupportedFlag, WrongDataSize
+	public YearFrame(byte[] buf, int offset) throws UnsupportedFlag, WrongDataSize, UnknownTextEncoding
 	{
 		super(buf, offset);
-		// размер данных должен быть точно 4 байта
-		if (getDataSize() != YEAR_SIZE)
-			throw new WrongDataSize("wrong size of year frame: " + getDataSize());
-		// смещаемся к данным
-		offset += FRAME_HEADER_LENGTH;
-		// читаем год
-		year = Integer.parseInt(new String(buf, offset, YEAR_SIZE, Charset.forName("utf-8")));
+		// год записан строкой, возможно, в кодировке
+		String year = Utils.readFrameText(buf, offset + FRAME_HEADER_LENGTH, getDataSize());
+		// в число
+		this.year = Integer.parseInt(year);
 	}
 
 	public int getYear() {return year;}
