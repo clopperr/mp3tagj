@@ -7,6 +7,7 @@ import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -17,11 +18,15 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import info.novikovi.components.CellChecker;
+import info.novikovi.components.HeadedTableCellRenderer;
 import info.novikovi.components.ObjectTableModel;
 import info.novikovi.components.StoredFrame;
 import info.novikovi.components.StrictedTable;
+import info.novikovi.components.TableCellRenderer;
 import info.novikovi.errors.UnsupportedLanguage;
 import info.novikovi.mp3.MP3;
+import info.novikovi.mp3.TextEncoding.ENCODINGS;
 import info.novikovi.mp3.UnknownTextEncoding;
 import info.novikovi.mp3.id3v2.AlbumFrame;
 import info.novikovi.mp3.id3v2.ArtistFrame;
@@ -37,7 +42,7 @@ import info.novikovi.utils.Resources;
 /*
  * <p>Главная форма приложения.</p>
  */
-public class MainForm extends StoredFrame
+public class MainForm extends StoredFrame implements CellChecker
 {
 	private static final long serialVersionUID = 2062760208030859011L;
 	
@@ -157,6 +162,11 @@ public class MainForm extends StoredFrame
 	private ActionListener button_listener = e -> makeButtonAction(((JButton)e.getSource()).getActionCommand());
 	
 	/**
+	 * список неверных кодировок (название, исполнитель, альбом)
+	 */
+	private List<Boolean[]> wrongEncodings = new ArrayList<>(); 
+
+	/**
 	 * <p>Конструктор.</p>
 	 */
 	public MainForm()
@@ -193,12 +203,6 @@ public class MainForm extends StoredFrame
 		main_form.open();
 		// упаковку делаем после открытия формы
 		main_form.pack();
-		// минимальные размеры
-		SwingUtilities.invokeLater(() ->
-			{
-				// размеры окна
-				main_form.setMinimumSize(new Dimension(300, 300));
-			});
 	}
 	
 	/**
@@ -247,6 +251,11 @@ public class MainForm extends StoredFrame
 		table.ApplyBestFit();
 		// сортировка
 		table.setAutoCreateRowSorter(true);
+		// отрисовка
+		table.setDefaultRenderer(Object.class, new TableCellRenderer(this));
+		// отрисовка заголовка
+		table.getTableHeader().setDefaultRenderer(new HeadedTableCellRenderer());
+//		TableCellRenderer r = table.getTableHeader().getDefaultRenderer();
 		// скроллер таблицы
 		JScrollPane scroller = new JScrollPane(table);
 		// на форму
@@ -282,12 +291,14 @@ public class MainForm extends StoredFrame
 	 */
 	private void readFileList()
 	{
+		// TODO wait
 		// выбираем папку
 		File folder = selectFolder();
 		// пользователь отказался от операции
 		if (folder == null) return;
 		// перебираем файлы
 		ArrayList<Object[]> files = new ArrayList<>();
+		wrongEncodings.clear();
 		for (File f: folder.listFiles())
 			if (f.getName().endsWith(".mp3"))
 			{
@@ -298,10 +309,13 @@ public class MainForm extends StoredFrame
 					{
 						// название трека
 						TitleFrame title = (TitleFrame)mp3.getV2Frame(FrameFactory.FRAME_TITLE);
+						boolean wrongTitleEncoding = title.getEncoding() == ENCODINGS.ISO8859;
 						// исполнитель
 						ArtistFrame artist = (ArtistFrame)mp3.getV2Frame(FrameFactory.FRAME_ARTIST);
+						boolean wrongArtistEncoding = artist.getEncoding() == ENCODINGS.ISO8859;
 						// альбом
 						AlbumFrame album = (AlbumFrame)mp3.getV2Frame(FrameFactory.FRAME_ALBUM);
+						boolean wrongAlbumEncoding = album.getEncoding() == ENCODINGS.ISO8859;
 						// номер трека
 						TrackNumberFrame number = (TrackNumberFrame)mp3.getV2Frame(FrameFactory.FRAME_TRACK_NUM);
 						// добавляем в модель
@@ -311,6 +325,8 @@ public class MainForm extends StoredFrame
 												album  == null ? "" : album.getAlbum(),
 												number  == null ? "" : "" + number.getTrackNumber()
 											});
+						// запоминаем проблемы с кодировками
+						wrongEncodings.add(new Boolean[] {wrongTitleEncoding, wrongArtistEncoding, wrongAlbumEncoding});
 					}
 				}
 				catch (IOException | UnsupportedFlag | WrongDataSize | UnknownTextEncoding e)
@@ -366,6 +382,16 @@ public class MainForm extends StoredFrame
 			parameters.setString(PARAM_OPEN_PATH, folder);
 		}
 		return file;
+	}
+	
+	@Override
+	public boolean isValidCell(int row, int column)
+	{
+		if (row >= wrongEncodings.size()) return true;
+		// три колонки с контролем кодировки
+		if (column > 0 && column < 4) return !wrongEncodings.get(row)[column - 1];
+		// остальные корректны
+		return true;
 	}
 	
 	/**
